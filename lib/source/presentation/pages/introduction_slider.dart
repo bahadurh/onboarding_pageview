@@ -38,23 +38,26 @@ class IntroductionSlider extends StatefulWidget {
   EdgeInsets? horizontalPadding;
   double topHeightHeader;
   double titleBottomPadding;
+  double dotsUpperEmptySpace;
+  double dotsBottomEmptySpace;
 
-  IntroductionSlider(
-      {Key? key,
-      required this.items,
-      this.showStatusBar = false,
-      this.initialPage = 0,
-      this.physics,
-      this.scrollDirection = Axis.horizontal,
-      this.back,
-      required this.done,
-      this.next,
-      this.dotIndicator,
-      this.horizontalPadding = EdgeInsets.zero,
-      this.topHeightHeader = 0,
-      this.titleBottomPadding = 0})
+  IntroductionSlider({Key? key,
+    required this.items,
+    this.showStatusBar = false,
+    this.initialPage = 0,
+    this.physics,
+    this.scrollDirection = Axis.horizontal,
+    this.back,
+    required this.done,
+    this.next,
+    this.dotIndicator,
+    this.horizontalPadding = EdgeInsets.zero,
+    this.topHeightHeader = 0,
+    this.dotsUpperEmptySpace = 0,
+    this.dotsBottomEmptySpace = 0,
+    this.titleBottomPadding = 0})
       : assert(
-            (initialPage <= items.length - 1) && (initialPage >= 0), "initialPage can't be less than 0 or greater than items length."),
+  (initialPage <= items.length - 1) && (initialPage >= 0), "initialPage can't be less than 0 or greater than items length."),
         super(key: key);
 
   @override
@@ -102,82 +105,92 @@ class _IntroductionSliderState extends State<IntroductionSlider> {
     final lastIndex = widget.initialPage == widget.items.length - 1;
     return Scaffold(
         body: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        //dots
-        Container(
-          padding: EdgeInsets.symmetric(vertical: widget.topHeightHeader),
-          width: MediaQuery.of(context).size.width,
-          child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 5,
-              runSpacing: 5,
-              children: List.generate(
-                  widget.items.length,
-                  (index) => AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: index == widget.initialPage
-                            ? widget.dotIndicator?.selectedColor
-                            : widget.dotIndicator?.unselectedColor ?? widget.dotIndicator?.selectedColor?.withOpacity(0.5),
-                      ),
-                      height: widget.dotIndicator?.size,
-                      width: index == widget.initialPage ? widget.dotIndicator!.size! * 2.5 : widget.dotIndicator!.size,
-                      duration: const Duration(milliseconds: 350)))),
-        ),
-        Flexible(
-          fit: FlexFit.loose,
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: [
-              Positioned.fill(
-                child: PageView.builder(
-                  controller: pageController,
-                  itemCount: widget.items.length,
-                  physics: widget.physics,
-                  scrollDirection: widget.scrollDirection,
-                  onPageChanged: (index) => setState(() => widget.initialPage = index),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: widget.items[index].backgroundColor,
-                        gradient: widget.items[index].gradient,
-                        image: widget.items[index].backgroundImageDecoration,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(bottom: widget.topHeightHeader),
-                            child: widget.items[index].logo ?? const SizedBox(),
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+                height: widget.dotsUpperEmptySpace
+            ),
+            //dots
+            Container(
+              padding: EdgeInsets.symmetric(vertical: widget.topHeightHeader),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: List.generate(
+                      widget.items.length,
+                          (index) =>
+                          AnimatedContainer(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                color: index == widget.initialPage
+                                    ? widget.dotIndicator?.selectedColor
+                                    : widget.dotIndicator?.unselectedColor ?? widget.dotIndicator?.selectedColor?.withOpacity(0.5),
+                              ),
+                              height: widget.dotIndicator?.size,
+                              width: index == widget.initialPage ? widget.dotIndicator!.size! * 2.5 : widget.dotIndicator!.size,
+                              duration: const Duration(milliseconds: 350)))),
+            ),
+            SizedBox(
+                height: widget.dotsUpperEmptySpace
+            ),
+            Flexible(
+              fit: FlexFit.loose,
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  Positioned.fill(
+                    child: PageView.builder(
+                      controller: pageController,
+                      itemCount: widget.items.length,
+                      physics: widget.physics,
+                      scrollDirection: widget.scrollDirection,
+                      onPageChanged: (index) => setState(() => widget.initialPage = index),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: widget.items[index].backgroundColor,
+                            gradient: widget.items[index].gradient,
+                            image: widget.items[index].backgroundImageDecoration,
                           ),
-                          Padding(
-                              padding: widget.horizontalPadding! + EdgeInsets.only(bottom: widget.titleBottomPadding),
-                              child: widget.items[index].title ?? const SizedBox()),
-                          Padding(padding: widget.horizontalPadding!, child: widget.items[index].subtitle ?? const SizedBox()),
-                          const Spacer(),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Positioned(
-                bottom: 35,
-                child: Padding(
-                  padding: widget.horizontalPadding!,
-                  child: lastIndex
-                      ? widget.done
-                      : widget.next == null
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: widget.topHeightHeader),
+                                child: widget.items[index].logo ?? const SizedBox(),
+                              ),
+                              Padding(
+                                  padding: widget.horizontalPadding! + EdgeInsets.only(bottom: widget.titleBottomPadding),
+                                  child: widget.items[index].title ?? const SizedBox()),
+                              Padding(padding: widget.horizontalPadding!, child: widget.items[index].subtitle ?? const SizedBox()),
+                              const Spacer(),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 35,
+                    child: Padding(
+                      padding: widget.horizontalPadding!,
+                      child: lastIndex
+                          ? widget.done
+                          : widget.next == null
                           ? const SizedBox()
                           : widget.next!,
-                ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ],
-    ));
+            ),
+          ],
+        ));
   }
 }
 
@@ -215,23 +228,22 @@ class CustomPageSlider extends StatefulWidget {
   double topHeightHeader;
   double titleBottomPadding;
 
-  CustomPageSlider(
-      {Key? key,
-      required this.items,
-      this.showStatusBar = false,
-      this.initialPage = 0,
-      this.physics,
-      this.scrollDirection = Axis.horizontal,
-      this.back,
-      this.done,
-      this.next,
-      this.dotIndicator,
-      this.horizontalPadding = EdgeInsets.zero,
-      this.topHeightHeader = 0,
-        this.bottomButton,
-      this.titleBottomPadding = 0})
+  CustomPageSlider({Key? key,
+    required this.items,
+    this.showStatusBar = false,
+    this.initialPage = 0,
+    this.physics,
+    this.scrollDirection = Axis.horizontal,
+    this.back,
+    this.done,
+    this.next,
+    this.dotIndicator,
+    this.horizontalPadding = EdgeInsets.zero,
+    this.topHeightHeader = 0,
+    this.bottomButton,
+    this.titleBottomPadding = 0})
       : assert(
-            (initialPage <= items.length - 1) && (initialPage >= 0), "initialPage can't be less than 0 or greater than items length."),
+  (initialPage <= items.length - 1) && (initialPage >= 0), "initialPage can't be less than 0 or greater than items length."),
         super(key: key);
 
   @override
@@ -278,69 +290,76 @@ class _CustomPageSliderState extends State<CustomPageSlider> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * .4,
-          child: PageView.builder(
-            controller: pageController,
-            itemCount: widget.items.length,
-            physics: widget.physics,
-            scrollDirection: widget.scrollDirection,
-            onPageChanged: (index) => setState(() => widget.initialPage = index),
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                    color: widget.items[index].backgroundColor,
-                    gradient: widget.items[index].gradient,
-                    image: widget.items[index].backgroundImageDecoration),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 31),
-                    if (widget.items[index].logo != null)
-                      Padding(
-                        padding: EdgeInsets.only(bottom: widget.topHeightHeader),
-                        child: widget.items[index].logo ?? const SizedBox(),
-                      ),
-                    Padding(
-                        padding: widget.horizontalPadding! + EdgeInsets.only(bottom: widget.titleBottomPadding),
-                        child: widget.items[index].title ?? const SizedBox()),
-                    Padding(padding: widget.horizontalPadding!, child: widget.items[index].subtitle ?? const SizedBox()),
-                    SizedBox(height: 74),
+          children: [
+            SizedBox(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * .4,
+              child: PageView.builder(
+                controller: pageController,
+                itemCount: widget.items.length,
+                physics: widget.physics,
+                scrollDirection: widget.scrollDirection,
+                onPageChanged: (index) => setState(() => widget.initialPage = index),
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: widget.items[index].backgroundColor,
+                        gradient: widget.items[index].gradient,
+                        image: widget.items[index].backgroundImageDecoration),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 31),
+                        if (widget.items[index].logo != null)
+                          Padding(
+                            padding: EdgeInsets.only(bottom: widget.topHeightHeader),
+                            child: widget.items[index].logo ?? const SizedBox(),
+                          ),
+                        Padding(
+                            padding: widget.horizontalPadding! + EdgeInsets.only(bottom: widget.titleBottomPadding),
+                            child: widget.items[index].title ?? const SizedBox()),
+                        Padding(padding: widget.horizontalPadding!, child: widget.items[index].subtitle ?? const SizedBox()),
+                        SizedBox(height: 74),
 
-                    // const Spacer(),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        Container(
-          alignment: Alignment.topLeft,
-          padding: widget.horizontalPadding!,
-          // padding: EdgeInsets.symmetric(vertical: widget.topHeightHeader),
-          width: MediaQuery.of(context).size.width,
-          child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 5,
-              runSpacing: 5,
-              children: List.generate(
-                  widget.items.length,
-                      (index) => AnimatedContainer(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        color: index == widget.initialPage
-                            ? widget.dotIndicator?.selectedColor
-                            : widget.dotIndicator?.unselectedColor ?? widget.dotIndicator?.selectedColor?.withOpacity(0.5),
-                      ),
-                      height: widget.dotIndicator?.size,
-                      // width: index == widget.initialPage ? widget.dotIndicator!.size! * 2.5 : widget.dotIndicator!.size,
-                      width: widget.dotIndicator!.size,
-                      duration: const Duration(milliseconds: 350)))),
-        ),
-        Spacer(),
-        widget.bottomButton ?? SizedBox.shrink(),
-      ],
-    ));
+                        // const Spacer(),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: widget.horizontalPadding!,
+              // padding: EdgeInsets.symmetric(vertical: widget.topHeightHeader),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 5,
+                  runSpacing: 5,
+                  children: List.generate(
+                      widget.items.length,
+                          (index) =>
+                          AnimatedContainer(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                color: index == widget.initialPage
+                                    ? widget.dotIndicator?.selectedColor
+                                    : widget.dotIndicator?.unselectedColor ?? widget.dotIndicator?.selectedColor?.withOpacity(0.5),
+                              ),
+                              height: widget.dotIndicator?.size,
+                              // width: index == widget.initialPage ? widget.dotIndicator!.size! * 2.5 : widget.dotIndicator!.size,
+                              width: widget.dotIndicator!.size,
+                              duration: const Duration(milliseconds: 350)))),
+            ),
+            Spacer(),
+            widget.bottomButton ?? SizedBox.shrink(),
+          ],
+        ));
   }
 }
